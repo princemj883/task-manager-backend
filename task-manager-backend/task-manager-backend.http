@@ -1,0 +1,54 @@
+@task_manager_backend_HostAddress = http://localhost:5083
+
+### Get task options (categories, priorities, statuses)
+GET {{task_manager_backend_HostAddress}}/api/tasks/options
+Accept: application/json
+
+### Get all tasks
+GET {{task_manager_backend_HostAddress}}/api/tasks
+Accept: application/json
+
+### Get task by id
+GET {{task_manager_backend_HostAddress}}/api/tasks/1
+Accept: application/json
+
+### Create a new task
+POST {{task_manager_backend_HostAddress}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Complete Angular Assignment",
+  "description": "Finish the task manager application with all requirements including http integration",
+  "category": "education",
+  "priority": "high",
+  "dueDate": "2030-12-15T00:00:00.000Z",
+  "status": "in-progress"
+}
+
+### Update a task
+PUT {{task_manager_backend_HostAddress}}/api/tasks/1
+Content-Type: application/json
+
+{
+  "title": "Complete Angular Assignment - Updated",
+  "description": "Updated description",
+  "status": "completed",
+  "priority": "high"
+}
+
+### Delete a task
+DELETE {{task_manager_backend_HostAddress}}/api/tasks/1
+
+### Get tasks by status
+GET {{task_manager_backend_HostAddress}}/api/tasks/status/in-progress
+Accept: application/json
+
+### Get tasks by priority
+GET {{task_manager_backend_HostAddress}}/api/tasks/priority/high
+Accept: application/json
+
+### Get tasks by category
+GET {{task_manager_backend_HostAddress}}/api/tasks/category/education
+Accept: application/json
+
+###
