@@ -52,3 +52,116 @@ GET {{task_manager_backend_HostAddress}}/api/tasks/category/education
 Accept: application/json
 
 ###
+
+### ====== EMPLOYEE ENDPOINTS ======
+
+### Get employee options (departments, statuses, locations)
+GET {{task_manager_backend_HostAddress}}/api/employees/options
+Accept: application/json
+
+### Get all employees
+GET {{task_manager_backend_HostAddress}}/api/employees
+Accept: application/json
+
+### Get employee by id
+GET {{task_manager_backend_HostAddress}}/api/employees/1
+Accept: application/json
+
+### Create a new employee
+POST {{task_manager_backend_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "firstName": "Rajesh",
+  "lastName": "Kumar",
+  "email": "rajesh.kumar@company.com",
+  "phone": "+91 98765 43210",
+  "department": "Engineering",
+  "designation": "Senior Software Engineer",
+  "salary": 95000,
+  "joinDate": "2019-03-15T00:00:00.000Z",
+  "status": "active",
+  "location": "Bangalore",
+  "managerId": 5,
+  "avatar": "https://i.pravatar.cc/150?u=1"
+}
+
+### Create multiple employees in batch
+POST {{task_manager_backend_HostAddress}}/api/employees/batch
+Content-Type: application/json
+
+[
+  {
+    "firstName": "Rajesh",
+    "lastName": "Kumar",
+    "email": "rajesh.kumar@company.com",
+    "phone": "+91 98765 43210",
+    "department": "Engineering",
+    "designation": "Senior Software Engineer",
+    "salary": 95000,
+    "joinDate": "2019-03-15T00:00:00.000Z",
+    "status": "active",
+    "location": "Bangalore",
+    "managerId": 5,
+    "avatar": "https://i.pravatar.cc/150?u=1"
+  },
+  {
+    "firstName": "Priya",
+    "lastName": "Singh",
+    "email": "priya.singh@company.com",
+    "phone": "+91 98765 43211",
+    "department": "Sales",
+    "designation": "Sales Manager",
+    "salary": 75000,
+    "joinDate": "2020-06-20T00:00:00.000Z",
+    "status": "active",
+    "location": "Mumbai",
+    "managerId": 3,
+    "avatar": "https://i.pravatar.cc/150?u=2"
+  },
+  {
+    "firstName": "Amit",
+    "lastName": "Patel",
+    "email": "amit.patel@company.com",
+    "phone": "+91 98765 43212",
+    "department": "Marketing",
+    "designation": "Marketing Executive",
+    "salary": 60000,
+    "joinDate": "2021-01-10T00:00:00.000Z",
+    "status": "active",
+    "location": "Delhi",
+    "managerId": 4,
+    "avatar": "https://i.pravatar.cc/150?u=3"
+  }
+]
+
+### Update an employee
+PUT {{task_manager_backend_HostAddress}}/api/employees/1
+Content-Type: application/json
+
+{
+  "designation": "Principal Software Engineer",
+  "salary": 120000,
+  "status": "active"
+}
+
+### Delete an employee
+DELETE {{task_manager_backend_HostAddress}}/api/employees/1
+
+### Get employees by department
+GET {{task_manager_backend_HostAddress}}/api/employees/department/Engineering
+Accept: application/json
+
+### Get employees by status
+GET {{task_manager_backend_HostAddress}}/api/employees/status/active
+Accept: application/json
+
+### Get employees by location
+GET {{task_manager_backend_HostAddress}}/api/employees/location/Bangalore
+Accept: application/json
+
+### Get employees by manager
+GET {{task_manager_backend_HostAddress}}/api/employees/manager/5
+Accept: application/json
+
+###
