@@ -6,7 +6,7 @@ using task_manager_backend.Models;
 namespace task_manager_backend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class EmployeesController : ControllerBase
 {
     private readonly TaskManagerContext _context;
@@ -65,7 +65,7 @@ public class EmployeesController : ControllerBase
         string? _sort = null,
         string? _order = null,
         int _page = 1,
-        int _limit = 10)
+        int _limit = 100)
     {
         try
         {
