@@ -7,17 +7,9 @@ namespace task_manager_backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TasksController : ControllerBase
+public class TasksController(TaskManagerContext context, ILogger<TasksController> logger)
+    : ControllerBase
 {
-    private readonly TaskManagerContext _context;
-    private readonly ILogger<TasksController> _logger;
-
-    public TasksController(TaskManagerContext context, ILogger<TasksController> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
-
     /// <summary>
     /// Get all tasks
     /// </summary>
@@ -26,12 +18,12 @@ public class TasksController : ControllerBase
     {
         try
         {
-            var tasks = await _context.Tasks.OrderByDescending(t => t.CreatedAt).ToListAsync();
+            var tasks = await context.Tasks.OrderByDescending(t => t.CreatedAt).ToListAsync();
             return Ok(tasks);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting tasks");
+            logger.LogError(ex, "Error getting tasks");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -44,7 +36,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await context.Tasks.FindAsync(id);
 
             if (task == null)
             {
@@ -55,7 +47,7 @@ public class TasksController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting task");
+            logger.LogError(ex, "Error getting task");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -84,14 +76,14 @@ public class TasksController : ControllerBase
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
+            context.Tasks.Add(task);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating task");
+            logger.LogError(ex, "Error creating task");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -104,7 +96,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await context.Tasks.FindAsync(id);
 
             if (task == null)
             {
@@ -130,14 +122,14 @@ public class TasksController : ControllerBase
             if (!string.IsNullOrWhiteSpace(updateTaskDto.Status))
                 task.Status = updateTaskDto.Status;
 
-            _context.Tasks.Update(task);
-            await _context.SaveChangesAsync();
+            context.Tasks.Update(task);
+            await context.SaveChangesAsync();
 
             return Ok(task);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating task");
+            logger.LogError(ex, "Error updating task");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -150,21 +142,21 @@ public class TasksController : ControllerBase
     {
         try
         {
-            var task = await _context.Tasks.FindAsync(id);
+            var task = await context.Tasks.FindAsync(id);
 
             if (task == null)
             {
                 return NotFound(new { message = $"Task with id {id} not found" });
             }
 
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
+            context.Tasks.Remove(task);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting task");
+            logger.LogError(ex, "Error deleting task");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }

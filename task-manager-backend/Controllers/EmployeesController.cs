@@ -7,21 +7,13 @@ namespace task_manager_backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EmployeesController : ControllerBase
+public class EmployeesController(TaskManagerContext context, ILogger<EmployeesController> logger)
+    : ControllerBase
 {
-    private readonly TaskManagerContext _context;
-    private readonly ILogger<EmployeesController> _logger;
-
     // Constants for valid options
     public static readonly string[] Departments = { "Engineering", "Sales", "Marketing", "HR", "Finance", "Operations", "Support" };
     public static readonly string[] Statuses = { "active", "inactive", "on-leave" };
     public static readonly string[] Locations = { "Bangalore", "Mumbai", "Delhi", "Hyderabad", "Chennai", "Pune", "Kolkata" };
-
-    public EmployeesController(TaskManagerContext context, ILogger<EmployeesController> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Get available employee options (departments, statuses, locations)
@@ -73,7 +65,7 @@ public class EmployeesController : ControllerBase
             if (_limit < 1) _limit = 10;
             if (_limit > 100) _limit = 100;
 
-            var query = _context.Employees.AsQueryable();
+            var query = context.Employees.AsQueryable();
 
             // Search filter
             if (!string.IsNullOrWhiteSpace(q))
@@ -213,7 +205,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employees");
+            logger.LogError(ex, "Error getting employees");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -226,7 +218,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await context.Employees.FindAsync(id);
 
             if (employee == null)
             {
@@ -237,7 +229,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employee");
+            logger.LogError(ex, "Error getting employee");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -282,14 +274,14 @@ public class EmployeesController : ControllerBase
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            context.Employees.Add(employee);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating employee");
+            logger.LogError(ex, "Error creating employee");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -341,14 +333,14 @@ public class EmployeesController : ControllerBase
                 employees.Add(employee);
             }
 
-            _context.Employees.AddRange(employees);
-            await _context.SaveChangesAsync();
+            context.Employees.AddRange(employees);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEmployees), employees);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating employees in batch");
+            logger.LogError(ex, "Error creating employees in batch");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -366,7 +358,7 @@ public class EmployeesController : ControllerBase
                 return BadRequest(new { message = "Request body is required" });
             }
 
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await context.Employees.FindAsync(id);
 
             if (employee == null)
             {
@@ -410,14 +402,14 @@ public class EmployeesController : ControllerBase
             if (!string.IsNullOrWhiteSpace(updateEmployeeDto.Avatar))
                 employee.Avatar = updateEmployeeDto.Avatar;
 
-            _context.Employees.Update(employee);
-            await _context.SaveChangesAsync();
+            context.Employees.Update(employee);
+            await context.SaveChangesAsync();
 
             return Ok(employee);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating employee");
+            logger.LogError(ex, "Error updating employee");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -430,21 +422,21 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await context.Employees.FindAsync(id);
 
             if (employee == null)
             {
                 return NotFound(new { message = $"Employee with id {id} not found" });
             }
 
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            context.Employees.Remove(employee);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting employee");
+            logger.LogError(ex, "Error deleting employee");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -457,7 +449,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employees = await _context.Employees
+            var employees = await context.Employees
                 .Where(e => e.Department.ToLower() == department.ToLower())
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
@@ -466,7 +458,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employees by department");
+            logger.LogError(ex, "Error getting employees by department");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -479,7 +471,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employees = await _context.Employees
+            var employees = await context.Employees
                 .Where(e => e.Status.ToLower() == status.ToLower())
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
@@ -488,7 +480,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employees by status");
+            logger.LogError(ex, "Error getting employees by status");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -501,7 +493,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employees = await _context.Employees
+            var employees = await context.Employees
                 .Where(e => e.Location.ToLower() == location.ToLower())
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
@@ -510,7 +502,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employees by location");
+            logger.LogError(ex, "Error getting employees by location");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -523,7 +515,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var employees = await _context.Employees
+            var employees = await context.Employees
                 .Where(e => e.ManagerId == managerId)
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
@@ -532,7 +524,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting employees by manager");
+            logger.LogError(ex, "Error getting employees by manager");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -565,7 +557,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            var query = _context.Employees.AsQueryable();
+            var query = context.Employees.AsQueryable();
 
             // Search filter
             if (!string.IsNullOrWhiteSpace(q))
@@ -728,7 +720,7 @@ public class EmployeesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error exporting employees");
+            logger.LogError(ex, "Error exporting employees");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
